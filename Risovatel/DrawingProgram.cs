@@ -5,88 +5,106 @@ using System.Drawing.Drawing2D;
 
 namespace RefactorMe
 {
-    class Risovatel
+    class Painter
     {
         static float x, y;
-        static Graphics grafika;
+        static Graphics impossibleSquare;
 
-        public static void Initialization ( Graphics novayaGrafika )
+        public static void InitializeNewPicture(Graphics newPicture)
         {
-            grafika = novayaGrafika;
-            grafika.SmoothingMode = SmoothingMode.None;
-            grafika.Clear(Color.Black);
+            impossibleSquare = newPicture;
+            impossibleSquare.SmoothingMode = SmoothingMode.None;
+            impossibleSquare.Clear(Color.Black);
         }
 
-        public static void set_position(float x0, float y0)
-        {x = x0; y = y0;}
-
-        public static void makeIt(Pen ruchka, double dlina, double ugol)
+        public static void SetPosition(float x0, float y0)
         {
-        //Делает шаг длиной dlina в направлении ugol и рисует пройденную траекторию
-        var x1 = (float)(x + dlina * Math.Cos(ugol));
-        var y1 = (float)(y + dlina * Math.Sin(ugol));
-        grafika.DrawLine(ruchka, x, y, x1, y1);
-        x = x1;
-        y = y1;
+            x = x0;
+            y = y0;
         }
 
-        public static void Change(double dlina, double ugol)
+        public static void DrawPath(Pen pen, double length, double angle)
         {
-            x = (float)(x + dlina * Math.Cos(ugol)); 
-           y = (float)(y + dlina * Math.Sin(ugol));
-           }
+            //Делает шаг длиной length в направлении angle и рисует пройденную траекторию
+            var x1 = (float)(x + length * Math.Cos(angle));
+            var y1 = (float)(y + length * Math.Sin(angle));
+            impossibleSquare.DrawLine(pen, x, y, x1, y1);
+            x = x1;
+            y = y1;
+        }
+
+        public static void ChangePosition(double length, double angle)
+        {
+            x = (float)(x + length * Math.Cos(angle));
+            y = (float)(y + length * Math.Sin(angle));
+        }
     }
 
     public class ImpossibleSquare
     {
-        public static void Draw(int shirina, int visota, double ugolPovorota, Graphics grafika)
+        private static readonly float bigLineMultiplier = 0.375f;
+        private static readonly float smallLineMultiplier = 0.04f;
+        public static void Draw(int width, int height, double turningAngle, Graphics picture)
         {
-            // ugolPovorota пока не используется, но будет использоваться в будущем
-            Risovatel.Initialization(grafika);
+            // turningAngle пока не используется, но будет использоваться в будущем
+            Painter.InitializeNewPicture(picture);
 
-            var sz = Math.Min(shirina, visota);
+            var lineLength = Math.Min(width, height);
 
-            var diagonal_length = Math.Sqrt(2) * (sz * 0.375f + sz * 0.04f) / 2;
-            var x0 = (float)(diagonal_length * Math.Cos(Math.PI / 4 + Math.PI)) + shirina / 2f;
-            var y0 = (float)(diagonal_length * Math.Sin(Math.PI / 4 + Math.PI)) + visota / 2f;
+            var diagonalLength = Math.Sqrt(2) * (lineLength * bigLineMultiplier + lineLength * smallLineMultiplier) / 2;
+            var x0 = (float)(diagonalLength * Math.Cos(Math.PI / 4 + Math.PI)) + width / 2f;
+            var y0 = (float)(diagonalLength * Math.Sin(Math.PI / 4 + Math.PI)) + height / 2f;
 
-            Risovatel.set_position(x0, y0);
+            Painter.SetPosition(x0, y0);
 
-            //Рисуем 1-ую сторону
-            Risovatel.makeIt(Pens.Yellow, sz * 0.375f, 0);
-            Risovatel.makeIt(Pens.Yellow, sz * 0.04f * Math.Sqrt(2), Math.PI / 4);
-            Risovatel.makeIt(Pens.Yellow, sz * 0.375f, Math.PI);
-            Risovatel.makeIt(Pens.Yellow, sz * 0.375f - sz * 0.04f, Math.PI / 2);
+            DrawLine1(lineLength);
+            DrawLine2(lineLength);
+            DrawLine3(lineLength);
+            DrawLine4(lineLength);
+        }
 
-            Risovatel.Change(sz * 0.04f, -Math.PI);
-            Risovatel.Change(sz * 0.04f * Math.Sqrt(2), 3 * Math.PI / 4);
+        private static void DrawLine4(int lineLength)
+        {
+            Painter.DrawPath(Pens.Yellow, lineLength * bigLineMultiplier, Math.PI / 2);
+            Painter.DrawPath(Pens.Yellow, lineLength * smallLineMultiplier * Math.Sqrt(2), Math.PI / 2 + Math.PI / 4);
+            Painter.DrawPath(Pens.Yellow, lineLength * bigLineMultiplier, Math.PI / 2 + Math.PI);
+            Painter.DrawPath(Pens.Yellow, lineLength * bigLineMultiplier - lineLength * smallLineMultiplier, Math.PI / 2 + Math.PI / 2);
 
-            //Рисуем 2-ую сторону
-            Risovatel.makeIt(Pens.Yellow, sz * 0.375f, -Math.PI / 2);
-            Risovatel.makeIt(Pens.Yellow, sz * 0.04f * Math.Sqrt(2), -Math.PI / 2 + Math.PI / 4);
-            Risovatel.makeIt(Pens.Yellow, sz * 0.375f, -Math.PI / 2 + Math.PI);
-            Risovatel.makeIt(Pens.Yellow, sz * 0.375f - sz * 0.04f, -Math.PI / 2 + Math.PI / 2);
+            Painter.ChangePosition(lineLength * smallLineMultiplier, Math.PI / 2 - Math.PI);
+            Painter.ChangePosition(lineLength * smallLineMultiplier * Math.Sqrt(2), Math.PI / 2 + 3 * Math.PI / 4);
+        }
 
-            Risovatel.Change(sz * 0.04f, -Math.PI / 2 - Math.PI);
-            Risovatel.Change(sz * 0.04f * Math.Sqrt(2), -Math.PI / 2 + 3 * Math.PI / 4);
+        private static void DrawLine3(int lineLength)
+        {
+            Painter.DrawPath(Pens.Yellow, lineLength * bigLineMultiplier, Math.PI);
+            Painter.DrawPath(Pens.Yellow, lineLength * smallLineMultiplier * Math.Sqrt(2), Math.PI + Math.PI / 4);
+            Painter.DrawPath(Pens.Yellow, lineLength * bigLineMultiplier, Math.PI + Math.PI);
+            Painter.DrawPath(Pens.Yellow, lineLength * bigLineMultiplier - lineLength * smallLineMultiplier, Math.PI + Math.PI / 2);
 
-            //Рисуем 3-ю сторону
-            Risovatel.makeIt(Pens.Yellow, sz * 0.375f, Math.PI);
-            Risovatel.makeIt(Pens.Yellow, sz * 0.04f * Math.Sqrt(2), Math.PI + Math.PI / 4);
-            Risovatel.makeIt(Pens.Yellow, sz * 0.375f, Math.PI + Math.PI);
-            Risovatel.makeIt(Pens.Yellow, sz * 0.375f - sz * 0.04f, Math.PI + Math.PI / 2);
+            Painter.ChangePosition(lineLength * smallLineMultiplier, Math.PI - Math.PI);
+            Painter.ChangePosition(lineLength * smallLineMultiplier * Math.Sqrt(2), Math.PI + 3 * Math.PI / 4);
+        }
 
-            Risovatel.Change(sz * 0.04f, Math.PI - Math.PI);
-            Risovatel.Change(sz * 0.04f * Math.Sqrt(2), Math.PI + 3 * Math.PI / 4);
+        private static void DrawLine2(int lineLength)
+        {
+            Painter.DrawPath(Pens.Yellow, lineLength * bigLineMultiplier, -Math.PI / 2);
+            Painter.DrawPath(Pens.Yellow, lineLength * smallLineMultiplier * Math.Sqrt(2), -Math.PI / 2 + Math.PI / 4);
+            Painter.DrawPath(Pens.Yellow, lineLength * bigLineMultiplier, -Math.PI / 2 + Math.PI);
+            Painter.DrawPath(Pens.Yellow, lineLength * bigLineMultiplier - lineLength * smallLineMultiplier, -Math.PI / 2 + Math.PI / 2);
 
-            //Рисуем 4-ую сторону
-            Risovatel.makeIt(Pens.Yellow, sz * 0.375f, Math.PI / 2);
-            Risovatel.makeIt(Pens.Yellow, sz * 0.04f * Math.Sqrt(2), Math.PI / 2 + Math.PI / 4);
-            Risovatel.makeIt(Pens.Yellow, sz * 0.375f, Math.PI / 2 + Math.PI);
-            Risovatel.makeIt(Pens.Yellow, sz * 0.375f - sz * 0.04f, Math.PI / 2 + Math.PI / 2);
+            Painter.ChangePosition(lineLength * smallLineMultiplier, -Math.PI / 2 - Math.PI);
+            Painter.ChangePosition(lineLength * smallLineMultiplier * Math.Sqrt(2), -Math.PI / 2 + 3 * Math.PI / 4);
+        }
 
-            Risovatel.Change(sz * 0.04f, Math.PI / 2 - Math.PI);
-            Risovatel.Change(sz * 0.04f * Math.Sqrt(2), Math.PI / 2 + 3 * Math.PI / 4);
+        private static void DrawLine1(int lineLength)
+        {
+            Painter.DrawPath(Pens.Yellow, lineLength * bigLineMultiplier, 0);
+            Painter.DrawPath(Pens.Yellow, lineLength * smallLineMultiplier * Math.Sqrt(2), Math.PI / 4);
+            Painter.DrawPath(Pens.Yellow, lineLength * bigLineMultiplier, Math.PI);
+            Painter.DrawPath(Pens.Yellow, lineLength * bigLineMultiplier - lineLength * smallLineMultiplier, Math.PI / 2);
+
+            Painter.ChangePosition(lineLength * smallLineMultiplier, -Math.PI);
+            Painter.ChangePosition(lineLength * smallLineMultiplier * Math.Sqrt(2), 3 * Math.PI / 4);
         }
     }
 }

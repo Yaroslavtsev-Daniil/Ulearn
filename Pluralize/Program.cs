@@ -26,6 +26,7 @@ namespace Pluralize
 
             if (!hasErrors)
                 Console.WriteLine("Correct!");
+            Console.ReadKey();
         }
     }
 }

@@ -20,6 +20,8 @@ namespace Rectangles
 
         private static IEnumerable<TestCase> CreateTestCases()
         {
+            yield return new RectanglesTestRoomTestCase(new Rectangle(20, 2, 40, 4), new Rectangle(20, 2, 0, 0),
+                true, 0, 1);
             yield return new RectanglesTestRoomTestCase(new Rectangle(0, 0, 20, 20), new Rectangle(-20, -30, 20, 20),
                 false, 0, -1);
             yield return new RectanglesTestRoomTestCase(new Rectangle(-90, -20, 180, 40),

@@ -6,22 +6,12 @@ namespace Mazes
 	{
 		public static void MoveOut(Robot robot, int width, int height)
 		{
-			MoveRight(robot, width);
-			MoveDown(robot, height);
+			Move(robot, height - 2, Direction.Down);
+			Move(robot, width - 2, Direction.Right);
 		}
-        private static void MoveDown(Robot robot, int height)
-        {
-			for (int i = 1; i < height - 2; i++)
-			{
-				robot.MoveTo(Direction.Down);
-			}
+		private static void Move(Robot robot, int distance, Direction dir)
+		{
+			for (int i = 1; i < distance; i++) robot.MoveTo(dir);
 		}
-        private static void MoveRight(Robot robot, int width)
-        {
-			for (int i = 1; i < width - 2; i++)
-			{
-				robot.MoveTo(Direction.Right);
-			}
-		}
-    }
+	}
 }

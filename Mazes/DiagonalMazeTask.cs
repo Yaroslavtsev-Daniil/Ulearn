@@ -6,29 +6,28 @@ namespace Mazes
     {
         public static void MoveOut(Robot robot, int width, int height)
         {
-            int step = StepOnMainDirection(width, height);            
-            int steps = ((Math.Max(width, height) - 1) / step) - 2;
+            width = width - 2;
+            height = height - 2;
 
-            Move(robot, step, СhooseDirection(width, height));
+            Direction fDir = SetDirection(width, height);
+            Direction sDir = SetSecondDirection(width, height);
+
+            int fstep = Math.Max(width, height) / Math.Min(width, height);
+            int steps = ((Math.Max(width, height) - 1) / fstep) - 1;
 
             for (int i = 0; i < steps; i++)
             {
-                Move(robot, 1, СhooseSecondDirection(width, height));
-                Move(robot, step, СhooseDirection(width, height));
+                Move(robot, fstep, fDir);
+                Move(robot, 1, sDir);
             }
+            Move(robot, fstep, fDir);
         }
-        private static int StepOnMainDirection(int width, int height)
-        {
-            return Math.Max(width, height) / (Math.Min(width, height) - 1);
-            /*if ((Math.Max(width, height) / Math.Min(width, height)) > 1) return Math.Max(width, height) / (Math.Min(width, height) - 1);
-            else return 2;*/
-        }
-        private static Direction СhooseDirection(int width, int height)
+        private static Direction SetDirection(int width, int height)
         {
             if (height > width) return Direction.Down;
             else return Direction.Right;
         }
-        private static Direction СhooseSecondDirection(int width, int height)
+        private static Direction SetSecondDirection(int width, int height)
         {
             if (height > width) return Direction.Right;
             else return Direction.Down;

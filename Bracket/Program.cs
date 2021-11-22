@@ -15,6 +15,10 @@ namespace Bracket
             Console.Write($"brackets2 - {iSBracketsCorrect(brackets2)}");
             if (iSBracketsCorrect(brackets2)) Console.Write($"; Lvl: {CaclLvl(brackets2)}");
             Console.Write($"; Lvl: {CaclLvl(brackets1)}");
+            Console.WriteLine();
+
+            CheckBrackets(brackets1);
+            CheckBrackets(brackets2);
         }
 
         private static int CaclLvl(string s)
@@ -46,6 +50,30 @@ namespace Bracket
 
             if (s.Length == 0) return true;
             else return false;
+        }
+        private static void CheckBrackets(string s)
+        {
+            char[] br = s.ToCharArray();
+            int lvl = 0;
+            int maxlvl = 0;
+
+            for (int i = 0; i < br.Length; i++)
+            {
+                if (br[i] == '(')
+                {
+                    lvl++;
+                    if (lvl > maxlvl) maxlvl++;
+                }
+                else if (br[i] == ')' && lvl > 0) lvl--;
+                else
+                {
+                    Console.WriteLine("String isn't correct");
+                    maxlvl = 0;
+                    break;
+                }
+            }
+            if (maxlvl != 0) Console.WriteLine($" {s} - correct, lvl = {maxlvl}");
+
         }
     }
 }

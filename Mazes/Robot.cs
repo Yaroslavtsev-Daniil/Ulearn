@@ -46,5 +46,22 @@ namespace Mazes
                 throw new Exception("Robot is broken!");
             path.Add(destination);
         }
+
+        public static Direction SetDirection(int width, int height)
+        {
+            if (height > width) return Direction.Down;
+            else return Direction.Right;
+        }
+
+        public static Direction SetSecondDirection(int width, int height)
+        {
+            if (height > width) return Direction.Right;
+            else return Direction.Down;
+        }
+
+        public static void Move(Robot robot, int distance, Direction dir)
+        {
+            for (int i = 0; i < distance; i++) robot.MoveTo(dir);
+        }
     }
 }
